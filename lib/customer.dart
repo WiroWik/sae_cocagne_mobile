@@ -8,7 +8,7 @@ class CustomerPage extends StatelessWidget {
         title: Text('Page Client'),
       ),
       body: Center(
-        child: Text('Je suis un client putain'),
+        child: Text('test'),
       ),
     );
   }
