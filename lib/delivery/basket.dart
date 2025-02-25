@@ -44,20 +44,28 @@ class _BasketPageState extends State<BasketPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Basket'),
+      title: Text('Liste des paniers'),
       ),
       body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : ListView.builder(
-              itemCount: basketData.length,
-              itemBuilder: (context, index) {
-                final item = basketData[index];
-                return ListTile(
-                  title: Text(item['produit']),
-                  subtitle: Text('Quantity: ${item['qte.sum']}'),
-                );
-              },
-            ),
+        ? Center(child: CircularProgressIndicator())
+        : ListView.builder(
+            itemCount: basketData.length,
+            itemBuilder: (context, index) {
+            final item = basketData[index];
+              return ListTile(
+                title: Text(item['produit']),
+                subtitle: Text('Quantité de produits : ${item['sum']}'),
+              );
+            },
+        ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          // Add your onPressed code here!
+        },
+        label: Text('Démarrer la livraison'),
+        icon: Icon(Icons.local_shipping),
+      ),
     );
   }
 }

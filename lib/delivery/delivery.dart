@@ -26,7 +26,7 @@ class _DeliveryPageState extends State<DeliveryPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Page Livreur'),
+        title: Text('Liste des tournées'),
       ),
       body: FutureBuilder(
         future: futureTournees,
