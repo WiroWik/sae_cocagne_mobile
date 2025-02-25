@@ -5,10 +5,10 @@ class ItineraryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Itinerary'),
+        title: Text('Itineraire'),
       ),
       body: Center(
-        child: Text('This is the Itinerary Page'),
+        child: Text('Page Itineraire'),
       ),
     );
   }
