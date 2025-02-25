@@ -70,7 +70,7 @@ Future<List<Tournee>> fetchTournees() async {
     Uri.parse('https://qjnieztpwnwroinqrolm.supabase.co/rest/v1/tournees'),
     headers: {
       'Content-Type': 'application/json',
-      'apikey': apikey, // Replace with your actual API key
+      'apikey': apikey,
     },
   );
 
