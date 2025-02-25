@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:sae_cocagne_mobile/delivery/itinerary.dart';
+
 const apikey = String.fromEnvironment('api_key', defaultValue: '0');
 
 class BasketPage extends StatefulWidget {
@@ -61,7 +63,12 @@ class _BasketPageState extends State<BasketPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
-          // Add your onPressed code here!
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ItineraryPage(),
+            ),
+          );
         },
         label: Text('Démarrer la livraison'),
         icon: Icon(Icons.local_shipping),
