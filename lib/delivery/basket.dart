@@ -51,10 +51,12 @@ class _BasketPageState extends State<BasketPage> {
       body: isLoading
         ? Center(child: CircularProgressIndicator())
         : ListView.builder(
+            
             itemCount: basketData.length,
             itemBuilder: (context, index) {
             final item = basketData[index];
               return ListTile(
+                leading: Icon(Icons.shopping_basket),
                 title: Text(item['produit']),
                 subtitle: Text('Quantité de produits : ${item['sum']}'),
               );
