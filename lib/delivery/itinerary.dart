@@ -138,6 +138,20 @@ class _ItineraryPageState extends State<ItineraryPage> {
                   TextButton(
                     child: Text('Fermer'),
                     onPressed: () {
+                      if (depotIndex < depotData.length - 1) {
+                        setState(() {
+                          depotIndex++;
+                          isLocated = false;
+                        });
+                        Future.wait([
+                          determinePosition(),
+                          getRoute(),
+                        ]);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text('Toutes les livraisons ont été effectuées'),
+                        ));
+                      }
                       Navigator.of(context).pop();
                     },
                   ),
@@ -145,22 +159,9 @@ class _ItineraryPageState extends State<ItineraryPage> {
               );
             },
           );
-          /*
-          if (depotIndex < depotData.length - 1) {
-            setState(() {
-              depotIndex++;
-              isLocated = false;
-            });
-            Future.wait([
-              determinePosition(),
-              getRoute(),
-            ]);
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-              content: Text('Toutes les livraisons ont été effectuées'),
-            ));
-          }
-          */
+          
+          
+          
         },
         label: Text('Scanner pour valider'),
         icon: Icon(Icons.qr_code),
