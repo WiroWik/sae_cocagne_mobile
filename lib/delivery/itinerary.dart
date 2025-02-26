@@ -20,8 +20,10 @@ class _ItineraryPageState extends State<ItineraryPage> {
   List<dynamic> depotData = [];
   bool isLoading = true;
   bool isLocated = false;
+  bool isRouted = false;
   int depotIndex = 0;
   LatLng userLocation = LatLng(0, 0);
+  List<LatLng> routeData = [];
 
   @override
   void initState() {
@@ -53,51 +55,68 @@ class _ItineraryPageState extends State<ItineraryPage> {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       appBar: AppBar(
       title: Text('Liste des dépôts'),
       ),
-      body: isLoading
-        ? Center(child: CircularProgressIndicator())
-        : !isLocated
-          ? Center(child: CircularProgressIndicator())
-          : Center(
+      body: FutureBuilder(
+        future: Future.wait([
+          isLoading ? fetchItineraryData() : Future.value(null),
+          !isLocated ? determinePosition() : Future.value(null),
+          isLocated && !isRouted ? getRoute() : Future.value(null),
+        ]),
+        builder: (context, snapshot) {
+          if (isLoading) {
+            return Center(child: CircularProgressIndicator());
+          } else if (!isLocated) {
+            return Center(child: CircularProgressIndicator());
+          } else if (!isRouted) {
+            return Center(child: Text("Calcul de l'itinéraire..."));
+          } else {
+            return Center(
               child: FlutterMap(
                 mapController: MapController(),
                 options: MapOptions(
-              initialCenter: LatLng(depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1], depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]),
-              initialZoom: 13.0,
+                    initialCenter: LatLng(
+                      (userLocation.latitude + depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1]) / 2,
+                      (userLocation.longitude + depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]) / 2,
+                    ),
+                  initialZoom: 9.0,
                 ),
                 children: [
-              TileLayer(
-                urlTemplate: 'https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=$tomtomkey',
-                subdomains: ['a', 'b', 'c'],
-              ),
-              MarkerLayer(
-                markers: [
-                  Marker(
-                point: LatLng(depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1], depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]),
-                width: 50,
-                height: 50,
-                child: Icon(Icons.location_pin, color: Colors.red, size: 50),
+                  TileLayer(
+                    urlTemplate: 'https://api.tomtom.com/map/1/tile/basic/main/{z}/{x}/{y}.png?key=$tomtomkey',
+                    subdomains: ['a', 'b', 'c'],
                   ),
-                ],
-              ),
-              PolylineLayer(
-                polylines: [
-                  Polyline(
-                    points: [
+                  MarkerLayer(
+                    markers: [
+                      Marker(
+                    point: LatLng(depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1], depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]),
+                    width: 50,
+                    height: 50,
+                    child: Icon(Icons.location_pin, color: Colors.red, size: 50),
+                      ),
+                    ],
+                  ),
+                  PolylineLayer(
+                    polylines: [
+                      Polyline(
+                    points: routeData.isNotEmpty ? routeData : [
                       LatLng(depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1], depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]),
-                      LatLng(userLocation.latitude, userLocation.longitude),
+                      userLocation,
                     ],
                     strokeWidth: 4.0,
                     color: Colors.blue,
+                      ),
+                    ],
                   ),
                 ],
               ),
-                ],
-              ),
-            ),
+            );
+          }
+        },
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
@@ -105,8 +124,11 @@ class _ItineraryPageState extends State<ItineraryPage> {
             setState(() {
               depotIndex++;
               isLocated = false;
-              determinePosition();
             });
+            Future.wait([
+              determinePosition(),
+              getRoute(),
+            ]);
           } else {
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
               content: Text('Toutes les livraisons ont été effectuées'),
@@ -125,8 +147,28 @@ class _ItineraryPageState extends State<ItineraryPage> {
         userLocation = LatLng(position.latitude, position.longitude);
         isLocated = true;
       });
+      
     }).catchError((e) {
       print(e);
     });
+  }
+
+  Future<void> getRoute() async {
+    final start = '${userLocation.latitude},${userLocation.longitude}';
+    final end = '${depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1]},${depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]}';
+    final response = await http.get(
+      Uri.parse("https://api.tomtom.com/routing/1/calculateRoute/$start:$end/json?avoid=unpavedRoads&key=$tomtomkey"),
+    );
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      
+      setState(() {
+        routeData = (data['routes'][0]['legs'][0]['points'] as List)
+        .map((point) => LatLng(point['latitude'], point['longitude']))
+        .toList();
+        isRouted = true;
+      });
+    } 
   }
 }
