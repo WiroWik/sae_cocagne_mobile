@@ -4,6 +4,7 @@ import 'dart:convert';
 import "package:flutter_map/flutter_map.dart";
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mobile_scanner/mobile_scanner.dart';
 
 const apikey = String.fromEnvironment('api_key', defaultValue: '0');
 const tomtomkey = String.fromEnvironment('tomtom_key', defaultValue: '0');
@@ -30,8 +31,6 @@ class _ItineraryPageState extends State<ItineraryPage> {
     super.initState();
     fetchItineraryData();
     determinePosition();
-    print(userLocation);
-    print(isLocated);
   }
 
   Future<void> fetchItineraryData() async {
@@ -102,12 +101,12 @@ class _ItineraryPageState extends State<ItineraryPage> {
                   PolylineLayer(
                     polylines: [
                       Polyline(
-                    points: routeData.isNotEmpty ? routeData : [
-                      LatLng(depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1], depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]),
-                      userLocation,
-                    ],
-                    strokeWidth: 4.0,
-                    color: Colors.blue,
+                        points: routeData.isNotEmpty ? routeData : [
+                          LatLng(depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1], depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]),
+                          userLocation,
+                        ],
+                        strokeWidth: 4.0,
+                        color: Colors.blue,
                       ),
                     ],
                   ),
@@ -120,6 +119,33 @@ class _ItineraryPageState extends State<ItineraryPage> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () {
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text('Scanner QR Code'),
+                content: SizedBox(
+                  height: 300,
+                  width: 300,
+                  child: MobileScanner(onDetect: (capture) {
+                    final List<Barcode> barcodes = capture.barcodes;
+                    for (final barcode in barcodes) {
+                      print(barcode.rawValue ?? "No Data found in QR");
+                    }
+                  })
+                ),
+                actions: [
+                  TextButton(
+                    child: Text('Fermer'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              );
+            },
+          );
+          /*
           if (depotIndex < depotData.length - 1) {
             setState(() {
               depotIndex++;
@@ -134,6 +160,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
               content: Text('Toutes les livraisons ont été effectuées'),
             ));
           }
+          */
         },
         label: Text('Scanner pour valider'),
         icon: Icon(Icons.qr_code),
@@ -149,7 +176,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
       });
       
     }).catchError((e) {
-      print(e);
+      throw Exception('Failed to get user location');
     });
   }
 
