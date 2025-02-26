@@ -68,7 +68,7 @@ class _BasketPageState extends State<BasketPage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ItineraryPage(),
+              builder: (context) => ItineraryPage(tourneeId: widget.tourneeId,),
             ),
           );
         },
