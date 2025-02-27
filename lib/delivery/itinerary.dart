@@ -5,6 +5,7 @@ import "package:flutter_map/flutter_map.dart";
 import 'package:latlong2/latlong.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:sae_cocagne_mobile/delivery/delivery_final.dart';
 import 'package:sae_cocagne_mobile/main.dart';
 
 const apikey = String.fromEnvironment('api_key', defaultValue: '0');
@@ -17,6 +18,8 @@ class ItineraryPage extends StatefulWidget {
   const ItineraryPage({super.key, required this.tourneeId});
   @override
   _ItineraryPageState createState() => _ItineraryPageState();
+
+  
 }
 
 class _ItineraryPageState extends State<ItineraryPage> {
@@ -79,10 +82,10 @@ class _ItineraryPageState extends State<ItineraryPage> {
               child: FlutterMap(
                 mapController: MapController(),
                 options: MapOptions(
-                    initialCenter: LatLng(
-                      (userLocation.latitude + depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1]) / 2,
-                      (userLocation.longitude + depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]) / 2,
-                    ),
+                  initialCenter: LatLng(
+                    (userLocation.latitude + depotData[depotIndex]["adresses"]["localisation"]["coordinates"][1]) / 2,
+                    (userLocation.longitude + depotData[depotIndex]["adresses"]["localisation"]["coordinates"][0]) / 2,
+                  ),
                   initialZoom: 10.0,
                 ),
                 children: [
@@ -206,7 +209,6 @@ class _ItineraryPageState extends State<ItineraryPage> {
 
     final barcode = barcodes.first;
     if (barcode.rawValue == null) {
-      
       return;
     }
 
@@ -238,7 +240,7 @@ class _ItineraryPageState extends State<ItineraryPage> {
       Navigator.push(
         context,
         MaterialPageRoute(
-        builder: (context) => MyApp(),
+          builder: (context) => AfterDelivery(),
         ),
       );
     }

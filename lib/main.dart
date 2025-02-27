@@ -16,7 +16,9 @@ class MyApp extends StatelessWidget {
       title: 'Jardins de Cocagne',
       theme: ThemeData(
         // This is the theme of your application.
-        
+        appBarTheme: AppBarTheme(
+          backgroundColor: Colors.lightGreen[100],
+        ),
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
         useMaterial3: true,
       ),
@@ -31,7 +33,6 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.lightGreen[100],
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

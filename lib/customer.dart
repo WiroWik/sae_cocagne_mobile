@@ -29,6 +29,7 @@ class CustomerPage extends StatelessWidget {
           itemBuilder: (context, index) {
             return ListTile(
               title: Text(snapshot.data![index]['depot']),
+              subtitle: Text("${snapshot.data![index]['adresses']['adresse']} ${snapshot.data![index]['adresses']['codepostal']} ${snapshot.data![index]['adresses']['ville']}"),
               leading: Icon(Icons.check_circle, color: Colors.green),
             );
           },
