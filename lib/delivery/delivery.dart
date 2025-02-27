@@ -41,12 +41,12 @@ class _DeliveryPageState extends State<DeliveryPage> {
                   title: Text(tournees[index].tournee),
                   subtitle: Text('Tournée n°${tournees[index].tourneeId}'),
                   onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                    builder: (context) => BasketPage(tourneeId: tournees[index].tourneeId.toString()),
-                    ),
-                  );
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                      builder: (context) => BasketPage(tourneeId: tournees[index].tourneeId.toString()),
+                      ),
+                    );
                   },
                 );
               },
